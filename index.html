@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的 Facebook 動態牆</title>
-    <!-- 引入 Supabase 官方 JavaScript SDK -->
-    <script src="https://cloudflare.com"></script>
     <style>
         body { font-family: Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
         .container { max-width: 600px; margin: 0 auto; }
@@ -19,50 +17,59 @@
 
     <div class="container">
         <h1>我的 Facebook 動態牆測試</h1>
-        <div id="posts-container" class="loading">正在連線至 Supabase 讀取貼文...</div>
+        <div id="posts-container" class="loading">正在直接連線至 Supabase 讀取貼文...</div>
     </div>
 
     <script>
-        // 【注意】這裡可以直接把你在 Supabase 複製的真實網址和金鑰貼在引號內
-        // 因為這是純靜態 HTML，直接貼上最快，且 Anon Public Key 放在前端是安全的
+        // 【請在此處填入你的真實資料】
         const SUPABASE_URL = "https://jguoddbmklnbrabkasgc.supabase.co"; 
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpndW9kZGJta2xuYnJhYmthc2djIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0NzA4ODcsImV4cCI6MjA5NjA0Njg4N30.OXtsYTO7Kppsu1hmUG-CyOSCB6K3YojeUoT4gtU70N0";
 
-        // 初始化 Supabase 客戶端
-        // 正確的新程式碼
-        const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        // 讀取資料庫貼文的函式
-        async function fetchPosts() {
-            const { data, error } = await supabase
-                .from('posts')
-                .select('*')
-                .order('created_at', { ascending: false });
-
+        // 採用瀏覽器內建的原生 Fetch API，完全不依賴外部套件
+        async function fetchPostsDirectly() {
             const container = document.getElementById('posts-container');
             
-            if (error) {
-                container.innerHTML = `<span style="color:red;">讀取失敗: ${error.message}</span>`;
-                return;
-            }
+            // 格式化網址，確保路徑正確指向你的 posts 資料表
+            const apiUrl = `${SUPABASE_URL}/rest/v1/posts?select=*&order=created_at.desc`;
 
-            if (!data || data.length === 0) {
-                container.innerText = '目前沒有任何貼文，請到 Supabase 新增資料。';
-                return;
-            }
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
 
-            // 清空載入中文字，並將資料轉化為 HTML 卡片
-            container.classList.remove('loading');
-            container.innerHTML = data.map(post => `
-                <div class="post-card">
-                    <p style="margin: 0; font-size: 16px;">${post.content}</p>
-                    <div class="post-time">發文時間: ${new Date(post.created_at).toLocaleString()}</div>
-                </div>
-            `).join('');
+                if (!response.ok) {
+                    throw new Error(`HTTP 錯誤！狀態碼: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (!data || data.length === 0) {
+                    container.innerText = '目前資料庫沒有任何貼文，請至 Supabase 後台新增。';
+                    return;
+                }
+
+                // 清空載入中狀態，渲染卡片
+                container.classList.remove('loading');
+                container.innerHTML = data.map(post => `
+                    <div class="post-card">
+                        <p style="margin: 0; font-size: 16px;">${post.content}</p>
+                        <div class="post-time">發文時間: ${new Date(post.created_at).toLocaleString()}</div>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                container.innerHTML = `<span style="color:red;">連線失敗: ${error.message}</span>`;
+                console.error(error);
+            }
         }
 
         // 執行抓取
-        fetchPosts();
+        fetchPostsDirectly();
     </script>
 </body>
 </html>
