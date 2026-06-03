@@ -30,7 +30,7 @@
 
         // 初始化 Supabase 客戶端
         // 正確的新程式碼
-        const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // 讀取資料庫貼文的函式
         async function fetchPosts() {
