@@ -1,11 +1,67 @@
-html<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <title>我的第一個網頁</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的 Facebook 動態牆</title>
+    <!-- 引入 Supabase 官方 JavaScript SDK -->
+    <script src="https://jsdelivr.net"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        h1 { color: #1877f2; text-align: center; }
+        .post-card { background: white; border-radius: 8px; padding: 15px; margin-bottom: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .post-time { color: #65676b; font-size: 12px; margin-top: 5px; }
+        .loading { text-align: center; color: #65676b; }
+    </style>
 </head>
 <body>
-    <h1>Hello World!</h1>
-    <p>這是我的 Facebook 複製專案起步點。</p>
+
+    <div class="container">
+        <h1>我的 Facebook 動態牆測試</h1>
+        <div id="posts-container" class="loading">正在連線至 Supabase 讀取貼文...</div>
+    </div>
+
+    <script>
+        // 【注意】這裡可以直接把你在 Supabase 複製的真實網址和金鑰貼在引號內
+        // 因為這是純靜態 HTML，直接貼上最快，且 Anon Public Key 放在前端是安全的
+        const SUPABASE_URL = "https://jguoddbmklnbrabkasgc.supabase.co"; 
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpndW9kZGJta2xuYnJhYmthc2djIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0NzA4ODcsImV4cCI6MjA5NjA0Njg4N30.OXtsYTO7Kppsu1hmUG-CyOSCB6K3YojeUoT4gtU70N0";
+
+        // 初始化 Supabase 客戶端
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // 讀取資料庫貼文的函式
+        async function fetchPosts() {
+            const { data, error } = await supabase
+                .from('posts')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            const container = document.getElementById('posts-container');
+            
+            if (error) {
+                container.innerHTML = `<span style="color:red;">讀取失敗: ${error.message}</span>`;
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                container.innerText = '目前沒有任何貼文，請到 Supabase 新增資料。';
+                return;
+            }
+
+            // 清空載入中文字，並將資料轉化為 HTML 卡片
+            container.classList.remove('loading');
+            container.innerHTML = data.map(post => `
+                <div class="post-card">
+                    <p style="margin: 0; font-size: 16px;">${post.content}</p>
+                    <div class="post-time">發文時間: ${new Date(post.created_at).toLocaleString()}</div>
+                </div>
+            `).join('');
+        }
+
+        // 執行抓取
+        fetchPosts();
+    </script>
 </body>
 </html>
