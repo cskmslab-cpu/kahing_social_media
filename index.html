@@ -311,9 +311,20 @@
   const myName = "慶豐年";
   const myJob = "網頁設計師";
   const myEmail = "abc@email.com";
+  const myAvatar = "https://i.ibb.co/tMpthF8H/gpt-image-2-medium-a.png";  // 🆕 頭像網址
+
   document.querySelectorAll(".my-name").forEach(el => el.textContent = myName);
   document.querySelectorAll(".my-job").forEach(el => el.textContent = myJob);
   document.querySelectorAll(".my-email").forEach(el => el.textContent = myEmail);
+
+  /* 🆕 統一設定所有貼文頭像 */
+  function applyAvatar(el) {
+    if (!el) return;
+    el.style.backgroundImage = `url('${myAvatar}')`;
+    el.style.backgroundSize = "cover";
+    el.style.backgroundPosition = "center";
+  }
+  document.querySelectorAll(".post-avatar").forEach(applyAvatar);
 
   /* ===== Supabase 設定 ===== */
   const SUPABASE_URL = "https://hqmxrkgajqlyafuqrvqf.supabase.co";
@@ -363,7 +374,6 @@
       const category = escapeHtml(post.category);
       const time = timeAgo(post.created_at);
 
-      // 🆕 處理圖片：有填網址才顯示，沒填就不顯示
       const imageHtml = post.image_url
         ? `<a href="${url}" target="_blank" rel="noopener">
              <img class="post-image" src="${encodeURI(post.image_url)}" alt="${title}" loading="lazy">
@@ -391,6 +401,8 @@
           <button>↪️ 分享</button>
         </div>
       `;
+
+      applyAvatar(card.querySelector(".post-avatar"));   // 🆕 套用頭像
       feed.appendChild(card);
     });
   })
