@@ -5,6 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>慶的個人網站</title>
 <style>
+ /* 👇 :root 放在這裡，<style> 的最開頭 */
+    :root {
+      --bg: #f0f2f5;
+      --card-bg: #ffffff;
+      --text: #050505;
+    }
+
+    .dark-mode {
+      --bg: #18191a;
+      --card-bg: #242526;
+      --text: #e4e6eb;
+    }
+ 
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     font-family: "Helvetica Neue", "PingFang TC", "Microsoft JhengHei", sans-serif;
@@ -147,7 +160,9 @@
 </style>
 </head>
 <body>
-
+ <button onclick="document.body.classList.toggle('dark-mode')">
+    🌙 切換深色
+  </button>
   <div class="container">
 
     <!-- 橫幅 -->
