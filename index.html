@@ -163,7 +163,7 @@
        style="width:100%; height:100%; object-fit:cover;">
 </div>
       <div class="name-block">
-        <h1>慶豐年</h1>
+        <h1 class="my-name"></h1>
         <p>就是愛玩</p>
       </div>
     </div>
@@ -217,7 +217,7 @@
           <div class="post-header">
             <div class="post-avatar"></div>
             <div>
-              <strong>你的名字</strong>
+              <strong class="my-name"></strong>
               <span>2 小時前</span>
             </div>
           </div>
@@ -234,7 +234,7 @@
           <div class="post-header">
             <div class="post-avatar"></div>
             <div>
-              <strong>你的名字</strong>
+              <strong class="my-name"></strong>
               <span>昨天</span>
             </div>
           </div>
@@ -249,6 +249,15 @@
 
     </div>
   </div>
-
+<script>
+  // 在這裡改一次名字就好
+  const myName = "慶豐年";
+  const myJob = "網頁設計師";
+  const myEmail = "abc@email.com";
+  // 下面這行會自動把名字填到所有標記的地方
+  document.querySelectorAll(".my-name").forEach(el => el.textContent = myName);
+  document.querySelectorAll(".my-job").forEach(el => el.textContent = myJob);
+  document.querySelectorAll(".my-email").forEach(el => el.textContent = myEmail);
+</script>
 </body>
 </html>
