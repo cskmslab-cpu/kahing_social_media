@@ -1,75 +1,245 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的 Facebook 動態牆</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; }
-        h1 { color: #1877f2; text-align: center; }
-        .post-card { background: white; border-radius: 8px; padding: 15px; margin-bottom: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        .post-time { color: #65676b; font-size: 12px; margin-top: 5px; }
-        .loading { text-align: center; color: #65676b; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的個人網站</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Helvetica Neue", "PingFang TC", "Microsoft JhengHei", sans-serif;
+    background: #f0f2f5;
+    color: #1c1e21;
+  }
+
+  /* 整體容器 */
+  .container { max-width: 1000px; margin: 0 auto; }
+
+  /* 橫幅 */
+  .cover {
+    position: relative;
+    height: 350px;
+    background: linear-gradient(135deg, #4267B2, #5b7bd5, #89a7e0);
+    border-radius: 0 0 12px 12px;
+    overflow: hidden;
+  }
+  .cover-text {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    color: rgba(255,255,255,0.85);
+    font-size: 14px;
+  }
+
+  /* 頭像與姓名區 */
+  .profile-header {
+    background: #fff;
+    border-radius: 0 0 12px 12px;
+    padding: 0 30px 20px;
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+    margin-top: -90px;
+    position: relative;
+    flex-wrap: wrap;
+  }
+  .avatar {
+    width: 168px;
+    height: 168px;
+    border-radius: 50%;
+    border: 5px solid #fff;
+    background: linear-gradient(135deg, #ff9a9e, #fecfef);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 60px;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .name-block { padding-bottom: 15px; }
+  .name-block h1 { font-size: 32px; }
+  .name-block p { color: #65676b; margin-top: 4px; }
+
+  /* 主體：左右兩欄 */
+  .main {
+    display: flex;
+    gap: 16px;
+    margin-top: 16px;
+    padding: 0 16px;
+    align-items: flex-start;
+  }
+  .left { flex: 0 0 360px; }
+  .right { flex: 1; }
+
+  /* 卡片通用樣式 */
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  }
+  .card h2 { font-size: 20px; margin-bottom: 12px; }
+
+  /* 簡介列表 */
+  .info-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    color: #65676b;
+  }
+  .info-item .icon { font-size: 20px; }
+
+  /* 貼文 */
+  .post-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .post-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff9a9e, #fecfef);
+  }
+  .post-header strong { display: block; }
+  .post-header span { font-size: 13px; color: #65676b; }
+  .post-body { line-height: 1.6; margin-bottom: 12px; }
+  .post-image {
+    width: 100%;
+    height: 250px;
+    background: linear-gradient(135deg, #a8edea, #fed6e3);
+    border-radius: 8px;
+  }
+  .post-actions {
+    display: flex;
+    border-top: 1px solid #e4e6eb;
+    margin-top: 12px;
+    padding-top: 8px;
+  }
+  .post-actions button {
+    flex: 1;
+    padding: 8px;
+    background: none;
+    border: none;
+    color: #65676b;
+    font-size: 15px;
+    cursor: pointer;
+    border-radius: 6px;
+  }
+  .post-actions button:hover { background: #f0f2f5; }
+
+  /* 響應式：手機上變成單欄 */
+  @media (max-width: 768px) {
+    .cover { height: 200px; border-radius: 0; }
+    .profile-header {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-top: -80px;
+    }
+    .name-block { padding-bottom: 0; }
+    .main { flex-direction: column; }
+    .left { flex: 1 1 auto; width: 100%; }
+  }
+</style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>我的 Facebook 動態牆測試</h1>
-        <div id="posts-container" class="loading">正在直接連線至 Supabase 讀取貼文...</div>
+  <div class="container">
+
+    <!-- 橫幅 -->
+    <div class="cover">
+      <div class="cover-text">我的封面照片</div>
     </div>
 
-    <script>
-        // 【請在此處填入你的真實資料】
-        const SUPABASE_URL = "https://jguoddbmklnbrabkasgc.supabase.co"; 
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpndW9kZGJta2xuYnJhYmthc2djIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0NzA4ODcsImV4cCI6MjA5NjA0Njg4N30.OXtsYTO7Kppsu1hmUG-CyOSCB6K3YojeUoT4gtU70N0";
+    <!-- 頭像與姓名 -->
+    <div class="profile-header">
+      <div class="avatar">👤</div>
+      <div class="name-block">
+        <h1>你的名字</h1>
+        <p>一句簡單的自我介紹</p>
+      </div>
+    </div>
 
-        // 採用瀏覽器內建的原生 Fetch API，完全不依賴外部套件
-        async function fetchPostsDirectly() {
-            const container = document.getElementById('posts-container');
-            
-            // 格式化網址，確保路徑正確指向你的 posts 資料表
-            const apiUrl = `${SUPABASE_URL}/rest/v1/posts?select=*&order=created_at.desc`;
+    <!-- 主體兩欄 -->
+    <div class="main">
 
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'GET',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
+      <!-- 左欄：簡介 -->
+      <div class="left">
+        <div class="card">
+          <h2>簡介</h2>
+          <div class="info-item">
+            <span class="icon">💼</span>
+            <span>職業 / 公司</span>
+          </div>
+          <div class="info-item">
+            <span class="icon">🎓</span>
+            <span>畢業學校</span>
+          </div>
+          <div class="info-item">
+            <span class="icon">📍</span>
+            <span>居住城市</span>
+          </div>
+          <div class="info-item">
+            <span class="icon">✉️</span>
+            <span>your@email.com</span>
+          </div>
+        </div>
 
-                if (!response.ok) {
-                    throw new Error(`HTTP 錯誤！狀態碼: ${response.status}`);
-                }
+        <div class="card">
+          <h2>相片</h2>
+          <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:6px;">
+            <div style="aspect-ratio:1; border-radius:8px; background:linear-gradient(135deg,#a8edea,#fed6e3);"></div>
+            <div style="aspect-ratio:1; border-radius:8px; background:linear-gradient(135deg,#fbc2eb,#a6c1ee);"></div>
+            <div style="aspect-ratio:1; border-radius:8px; background:linear-gradient(135deg,#fdcbf1,#e6dee9);"></div>
+            <div style="aspect-ratio:1; border-radius:8px; background:linear-gradient(135deg,#ffecd2,#fcb69f);"></div>
+            <div style="aspect-ratio:1; border-radius:8px; background:linear-gradient(135deg,#a1c4fd,#c2e9fb);"></div>
+            <div style="aspect-ratio:1; border-radius:8px; background:linear-gradient(135deg,#d4fc79,#96e6a1);"></div>
+          </div>
+        </div>
+      </div>
 
-                const data = await response.json();
+      <!-- 右欄：動態貼文 -->
+      <div class="right">
+        <div class="card">
+          <div class="post-header">
+            <div class="post-avatar"></div>
+            <div>
+              <strong>你的名字</strong>
+              <span>2 小時前</span>
+            </div>
+          </div>
+          <div class="post-body">這是我的第一則貼文！歡迎來到我的個人網站 🎉</div>
+          <div class="post-image"></div>
+          <div class="post-actions">
+            <button>👍 讚</button>
+            <button>💬 留言</button>
+            <button>↪️ 分享</button>
+          </div>
+        </div>
 
-                if (!data || data.length === 0) {
-                    container.innerText = '目前資料庫沒有任何貼文，請至 Supabase 後台新增。';
-                    return;
-                }
+        <div class="card">
+          <div class="post-header">
+            <div class="post-avatar"></div>
+            <div>
+              <strong>你的名字</strong>
+              <span>昨天</span>
+            </div>
+          </div>
+          <div class="post-body">在這裡分享一些日常想法與生活點滴。你可以複製這整個卡片區塊來新增更多貼文。</div>
+          <div class="post-actions">
+            <button>👍 讚</button>
+            <button>💬 留言</button>
+            <button>↪️ 分享</button>
+          </div>
+        </div>
+      </div>
 
-                // 清空載入中狀態，渲染卡片
-                container.classList.remove('loading');
-                container.innerHTML = data.map(post => `
-                    <div class="post-card">
-                        <p style="margin: 0; font-size: 16px;">${post.content}</p>
-                        <div class="post-time">發文時間: ${new Date(post.created_at).toLocaleString()}</div>
-                    </div>
-                `).join('');
+    </div>
+  </div>
 
-            } catch (error) {
-                container.innerHTML = `<span style="color:red;">連線失敗: ${error.message}</span>`;
-                console.error(error);
-            }
-        }
-
-        // 執行抓取
-        fetchPostsDirectly();
-    </script>
 </body>
 </html>
