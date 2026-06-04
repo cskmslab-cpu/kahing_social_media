@@ -153,6 +153,17 @@
     display: inline-block;
     margin-bottom: 10px;
   }
+
+   .post-image {
+    width: 100%;
+    display: block;
+    border-radius: 8px;
+    margin-top: 10px;
+    object-fit: cover;
+    max-height: 400px;
+  }
+
+    
   .post-title:hover { text-decoration: underline; }
 
   /* 分類標籤 */
@@ -368,7 +379,16 @@
       const url = encodeURI(post.url || "#");
       const category = escapeHtml(post.category);
       const time = timeAgo(post.created_at);
+      
+    // 🆕 處理圖片：有填網址才顯示，沒填就不顯示
+      const imageHtml = post.image_url
+        ? `<a href="${url}" target="_blank" rel="noopener">
+             <img class="post-image" src="${encodeURI(post.image_url)}" alt="${title}" loading="lazy">
+           </a>`
+        : "";
 
+
+        
       const card = document.createElement("div");
       card.className = "card";
       card.innerHTML = `
