@@ -30,10 +30,8 @@
     color: var(--text);
   }
 
-  /* 整體容器 */
   .container { max-width: 1000px; margin: 0 auto; }
 
-  /* 切換按鈕 */
   .toggle-btn {
     position: fixed;
     top: 12px;
@@ -49,7 +47,6 @@
     box-shadow: 0 1px 4px rgba(0,0,0,0.2);
   }
 
-  /* 橫幅 */
   .cover {
     position: relative;
     height: 350px;
@@ -65,7 +62,6 @@
     font-size: 14px;
   }
 
-  /* 頭像與姓名區 */
   .profile-header {
     background: var(--card-bg);
     color: var(--text);
@@ -95,7 +91,6 @@
   .name-block h1 { font-size: 32px; }
   .name-block p { color: var(--sub-text); margin-top: 4px; }
 
-  /* 主體：左右兩欄 */
   .main {
     display: flex;
     gap: 16px;
@@ -106,7 +101,6 @@
   .left { flex: 0 0 360px; }
   .right { flex: 1; }
 
-  /* 卡片通用樣式 */
   .card {
     background: var(--card-bg);
     color: var(--text);
@@ -117,7 +111,6 @@
   }
   .card h2 { font-size: 20px; margin-bottom: 12px; }
 
-  /* 簡介列表 */
   .info-item {
     display: flex;
     align-items: center;
@@ -127,7 +120,6 @@
   }
   .info-item .icon { font-size: 20px; }
 
-  /* 貼文 */
   .post-header {
     display: flex;
     align-items: center;
@@ -143,7 +135,7 @@
   .post-header strong { display: block; }
   .post-header span { font-size: 13px; color: var(--sub-text); }
   .post-body { line-height: 1.6; margin-bottom: 12px; white-space: pre-wrap; }
-  /* 文章標題連結 */
+
   .post-title {
     font-size: 18px;
     font-weight: bold;
@@ -153,8 +145,10 @@
     display: inline-block;
     margin-bottom: 10px;
   }
+  .post-title:hover { text-decoration: underline; }
 
-   .post-image {
+  /* ✅ 真實圖片用這個 */
+  .post-image {
     width: 100%;
     display: block;
     border-radius: 8px;
@@ -163,10 +157,14 @@
     max-height: 400px;
   }
 
-    
-  .post-title:hover { text-decoration: underline; }
+  /* ✅ 靜態範例的漸層佔位框，改名避免衝突 */
+  .post-image-placeholder {
+    width: 100%;
+    height: 250px;
+    background: linear-gradient(135deg, #a8edea, #fed6e3);
+    border-radius: 8px;
+  }
 
-  /* 分類標籤 */
   .post-category {
     display: inline-block;
     font-size: 13px;
@@ -179,13 +177,7 @@
     color: #89a7e0;
     background: rgba(137,167,224,0.15);
   }
-  .post-image {
-    width: 100%;
-    height: 250px;
-    background: linear-gradient(135deg, #a8edea, #fed6e3);
-    border-radius: 8px;
-    object-fit: cover;
-  }
+
   .post-actions {
     display: flex;
     border-top: 1px solid var(--border);
@@ -204,7 +196,6 @@
   }
   .post-actions button:hover { background: var(--hover); }
 
-  /* 載入提示 */
   .feed-status {
     text-align: center;
     color: var(--sub-text);
@@ -212,7 +203,6 @@
     font-size: 14px;
   }
 
-  /* 響應式：手機上變成單欄 */
   @media (max-width: 768px) {
     .cover { height: 200px; border-radius: 0; }
     .profile-header {
@@ -233,13 +223,11 @@
   </button>
   <div class="container">
 
-    <!-- 橫幅 -->
     <div class="cover">
       <img src="https://i.ibb.co/r27YRtZ0/16bit.png"
        style="width:100%; height:100%; object-fit:cover;">
     </div>
 
-    <!-- 頭像與姓名 -->
     <div class="profile-header">
       <div class="avatar" style="overflow:hidden; padding:0;">
         <img src="https://i.ibb.co/tMpthF8H/gpt-image-2-medium-a.png"
@@ -251,10 +239,8 @@
       </div>
     </div>
 
-    <!-- 主體兩欄 -->
     <div class="main">
 
-      <!-- 左欄：簡介 -->
       <div class="left">
         <div class="card">
           <h2>簡介</h2>
@@ -293,15 +279,12 @@
         </div>
       </div>
 
-      <!-- 右欄：動態貼文 -->
       <div class="right">
 
-        <!-- 👇 Supabase 的貼文會自動插入這裡 -->
         <div id="post-feed">
           <div class="feed-status">載入貼文中…</div>
         </div>
 
-        <!-- 👇 以下是原本的靜態範例貼文，不需要可以刪除 -->
         <div class="card">
           <div class="post-header">
             <div class="post-avatar"></div>
@@ -311,7 +294,7 @@
             </div>
           </div>
           <div class="post-body">這是我的第一則貼文！歡迎來到我的個人網站 🎉</div>
-          <div class="post-image"></div>
+          <div class="post-image-placeholder"></div>
           <div class="post-actions">
             <button>👍 讚</button>
             <button>💬 留言</button>
@@ -379,16 +362,14 @@
       const url = encodeURI(post.url || "#");
       const category = escapeHtml(post.category);
       const time = timeAgo(post.created_at);
-      
-    // 🆕 處理圖片：有填網址才顯示，沒填就不顯示
+
+      // 🆕 處理圖片：有填網址才顯示，沒填就不顯示
       const imageHtml = post.image_url
         ? `<a href="${url}" target="_blank" rel="noopener">
              <img class="post-image" src="${encodeURI(post.image_url)}" alt="${title}" loading="lazy">
            </a>`
         : "";
 
-
-        
       const card = document.createElement("div");
       card.className = "card";
       card.innerHTML = `
@@ -403,6 +384,7 @@
           <a class="post-title" href="${url}" target="_blank" rel="noopener">${title}</a><br>
           ${category ? `<span class="post-category"># ${category}</span>` : ""}
         </div>
+        ${imageHtml}
         <div class="post-actions">
           <button onclick="window.open('${url}','_blank')">🔗 看文章</button>
           <button>👍 讚</button>
