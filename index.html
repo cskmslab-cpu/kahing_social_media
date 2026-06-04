@@ -325,7 +325,8 @@
     el.style.backgroundPosition = "center";
   }
   document.querySelectorAll(".post-avatar").forEach(applyAvatar);
-
+  const bigAvatar = document.querySelector(".avatar");
+  if (bigAvatar) applyAvatar(bigAvatar);
   /* ===== Supabase 設定 ===== */
   const SUPABASE_URL = "https://hqmxrkgajqlyafuqrvqf.supabase.co";
   const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhxbXhya2dhanFseWFmdXFydnFmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0MTc1NDMsImV4cCI6MjA5Mjk5MzU0M30.pcmt2c9ltXM0MU9odM7EdQys5klYWi2EVCEsBPGR4FQ";
